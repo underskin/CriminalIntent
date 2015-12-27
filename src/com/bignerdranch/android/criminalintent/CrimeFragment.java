@@ -33,7 +33,8 @@ public class CrimeFragment extends android.support.v4.app.Fragment {
 	public static final String EXTRA_CRIME_ID = "com.bignerdranch.android.criminalintent.crime_id";
 
 	private static final String DIALOG_DATE = "date";
-	private static final int REQUEST_CODE = 0;
+	private static final int REQUEST_DATE = 0;
+	private static final int REQUEST_PHOTO = 1;
 
 	private Crime mCrime;
 	private EditText mTitleField;
@@ -103,7 +104,7 @@ public class CrimeFragment extends android.support.v4.app.Fragment {
 				FragmentManager fm = getActivity().getSupportFragmentManager();
 				DatePickerFragment dialog = DatePickerFragment
 						.newInstance(mCrime.getDate());
-				dialog.setTargetFragment(CrimeFragment.this, REQUEST_CODE);
+				dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
 				dialog.show(fm, DIALOG_DATE);
 				Log.d(TAG, "Dialog poped");
 				Toast.makeText(getActivity(), "Dialog poped",
@@ -128,7 +129,8 @@ public class CrimeFragment extends android.support.v4.app.Fragment {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(getActivity(), CrimeCameraActivity.class);
-				startActivity(i);
+				// startActivity(i);
+				startActivityForResult(i, REQUEST_PHOTO);
 			}
 		});
 
@@ -175,11 +177,16 @@ public class CrimeFragment extends android.support.v4.app.Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode != Activity.RESULT_OK)
 			return;
-		if (requestCode == REQUEST_CODE) {
+		if (requestCode == REQUEST_DATE) {
 			Date date = (Date) data
 					.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
 			mCrime.setDate(date);
 			updateDate();
+		} else if (requestCode == REQUEST_PHOTO) {
+			String filename = data
+					.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
+			if (filename != null)
+				Log.i(TAG, "filename: " + filename);
 		}
 	}
 }
